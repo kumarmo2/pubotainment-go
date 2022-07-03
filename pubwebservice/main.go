@@ -25,5 +25,6 @@ func registerRoutes(router *gin.Engine) {
 	})
 
 	router.POST("/register/:companyName/admin/", authService.RegisterAdmin)
+	router.POST("/register/:companyName/user/", authService.RegisterUser)
 
 }

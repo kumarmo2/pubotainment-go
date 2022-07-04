@@ -5,14 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"pubwebservice/business/authentication"
 	authService "pubwebservice/services/authentication"
 )
 
 func main() {
 	fmt.Println("hello world")
 	router := gin.Default()
-	authentication.X()
 
 	registerRoutes(router)
 	http.ListenAndServe(":8000", router)
@@ -24,7 +22,9 @@ func registerRoutes(router *gin.Engine) {
 		ctx.JSON(http.StatusOK, "ping")
 	})
 
-	router.POST("/register/:companyName/admin/", authService.RegisterAdmin)
-	router.POST("/register/:companyName/user/", authService.RegisterUser)
-
+	var registerRoute = router.Group("/register")
+	{
+		registerRoute.POST("/:companyName/admin/", authService.RegisterAdmin)
+		registerRoute.POST("/:companyName/user/", authService.RegisterUser)
+	}
 }

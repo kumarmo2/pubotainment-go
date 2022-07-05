@@ -3,13 +3,32 @@ package authentication
 import (
 	"errors"
 	"fmt"
+	"log"
 	authDA "pubwebservice/dataAccess/authentication"
 	authDtos "pubwebservice/dtos/authentication"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func X() {}
+func SignInAdmin(request *authDtos.SignInRequest) bool {
+	if request == nil {
+		panic("signIn request cannot be null.")
+	}
+	company := authDA.GetCompanyById(request.CompanyId)
+
+	if company == nil || company.Id < 1 {
+		log.Println("company not found. companyId:", request.CompanyId)
+		return false
+	}
+	companyAdminHash := company.AdminHashedPass
+	pass := request.Password
+
+	if err := bcrypt.CompareHashAndPassword([]byte(*companyAdminHash), []byte(pass)); err != nil {
+		log.Println("error while comparing admin's pass's hash", err.Error())
+		return false
+	}
+	return true
+}
 
 func RegisterUser(companyName string, request authDtos.UserRegistrationRequest) error {
 	company := authDA.GetCompanyByName(companyName)
@@ -59,3 +78,10 @@ func RegisterAdmin(companyName string, request authDtos.AdminRegistrationRequest
 
 	return nil
 }
+
+// func IsValidAdminSignInRequest(request *authDtos.SignInRequest) (bool, error) {
+// if request = nil {
+// return false, errors.New("Invalid signIn Request")
+// }
+
+// }

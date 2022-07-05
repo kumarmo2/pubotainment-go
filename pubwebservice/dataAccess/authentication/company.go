@@ -9,6 +9,20 @@ import (
 	da "pubwebservice/dataAccess"
 )
 
+func GetCompanyById(companyId int64) *authModels.Company {
+	db, err := da.GetConnectionFactory().GetConnection()
+
+	if err != nil {
+		panic("could not connect to db")
+	}
+	var company authModels.Company
+	err = db.Get(&company, "select * from authentication.companies where id = $1", companyId)
+	if err != nil {
+		panic(fmt.Sprintf("error while fetching company by id, err: %v", err))
+	}
+	return &company
+}
+
 func GetCompanyByName(name string) *authModels.Company {
 	db, err := da.GetConnectionFactory().GetConnection()
 

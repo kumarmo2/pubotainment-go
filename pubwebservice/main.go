@@ -16,15 +16,35 @@ func main() {
 	http.ListenAndServe(":8000", router)
 }
 
+func helloMiddleWare(c *gin.Context) {
+	fmt.Println("hello from middleware")
+	c.JSON(http.StatusOK, "returning from middleware")
+	c.Abort()
+}
+
 func registerRoutes(router *gin.Engine) {
 
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, "ping")
-	})
-
-	var registerRoute = router.Group("/register")
+	var apiGroup = router.Group("/api")
 	{
-		registerRoute.POST("/:companyName/admin/", authService.RegisterAdmin)
-		registerRoute.POST("/:companyName/user/", authService.RegisterUser)
+		apiGroup.GET("/", helloMiddleWare, func(ctx *gin.Context) {
+			fmt.Println("hello from root")
+			ctx.JSON(http.StatusOK, "ping")
+		})
+
+		apiGroup.GET("/props", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, gin.H{"name": "kumarmo2"})
+		})
+
+		signInGroup := apiGroup.Group("/signin")
+		{
+			signInGroup.POST("/admin/", authService.SignInAdmin)
+		}
+
+		var registerRoute = apiGroup.Group("/register")
+		{
+			registerRoute.POST("/:companyName/admin/", authService.RegisterAdmin)
+			registerRoute.POST("/:companyName/user/", authService.RegisterUser)
+		}
 	}
+
 }

@@ -32,7 +32,7 @@ func (builder *CookieBuilder) Build() (*http.Cookie, error) {
 
 	if builder.Domain == "" {
 		// this should be set on the basis of some environment variable
-		domain = "localhost:8000"
+		domain = "localhost"
 	}
 
 	if builder.MaxAge == 0 {

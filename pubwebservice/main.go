@@ -22,6 +22,25 @@ func helloMiddleWare(c *gin.Context) {
 	c.Abort()
 }
 
+func registerAdminRoutes(apiGroup *gin.RouterGroup) {
+
+	adminGroup := apiGroup.Group("/admin")
+	{
+		adminGroup.POST("/signin/", authService.SignInAdmin)
+		adminGroup.POST("/register/:companyName/", authService.RegisterAdmin)
+	}
+}
+
+func registerUserRoutes(apiGroup *gin.RouterGroup) {
+	apiGroup.POST("/user/register/:companyName/", authService.RegisterUser)
+	apiGroup.POST("/user/signin/", authService.SignInUser)
+
+	userGroup := apiGroup.Group("/user")
+	{
+		userGroup.POST("/ping", func(ctx *gin.Context) {})
+	}
+}
+
 func registerRoutes(router *gin.Engine) {
 
 	var apiGroup = router.Group("/api")
@@ -35,16 +54,9 @@ func registerRoutes(router *gin.Engine) {
 			ctx.JSON(http.StatusOK, gin.H{"name": "kumarmo2"})
 		})
 
-		signInGroup := apiGroup.Group("/signin")
-		{
-			signInGroup.POST("/admin/", authService.SignInAdmin)
-		}
+		registerAdminRoutes(apiGroup)
+		registerUserRoutes(apiGroup)
 
-		var registerRoute = apiGroup.Group("/register")
-		{
-			registerRoute.POST("/:companyName/admin/", authService.RegisterAdmin)
-			registerRoute.POST("/:companyName/user/", authService.RegisterUser)
-		}
 	}
 
 }

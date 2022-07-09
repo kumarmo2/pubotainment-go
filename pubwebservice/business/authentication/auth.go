@@ -23,11 +23,39 @@ func SignInAdmin(request *authDtos.SignInRequest) bool {
 	companyAdminHash := company.AdminHashedPass
 	pass := request.Password
 
+	// TODO: need to check if number of admins logged in right now already has been reached upto limit.
+	// in case yes, do not let the admin login.
+
 	if err := bcrypt.CompareHashAndPassword([]byte(*companyAdminHash), []byte(pass)); err != nil {
 		log.Println("error while comparing admin's pass's hash", err.Error())
 		return false
 	}
 	return true
+}
+
+func SignInUser(request *authDtos.SignInRequest) bool {
+	if request == nil {
+		panic("signIn request cannot be null.")
+	}
+	company := authDA.GetCompanyById(request.CompanyId)
+
+	if company == nil || company.Id < 1 {
+		log.Println("company not found. companyId:", request.CompanyId)
+		return false
+	}
+
+	companyUserHash := company.UserHashedPass
+	pass := request.Password
+
+	// TODO: need to check if number of users logged in right now already has been reached upto limit.
+	// in case yes, do not let the user login.
+
+	if err := bcrypt.CompareHashAndPassword([]byte(*companyUserHash), []byte(pass)); err != nil {
+		log.Println("error while comparing user's pass's hash", err.Error())
+		return false
+	}
+	return true
+
 }
 
 func RegisterUser(companyName string, request authDtos.UserRegistrationRequest) error {

@@ -47,7 +47,7 @@ func SignInAdmin(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"companyId": request.CompanyId,
 	})
-	tokenString, err := token.SignedString(cons.JWT_SECRET)
+	tokenString, err := token.SignedString(cons.JWT_SECRET_ADMIN)
 	if err != nil {
 		fmt.Println("error while signing the token, err:", err.Error())
 		panic("Something went wrong. Please try again.")
@@ -65,7 +65,32 @@ func SignInAdmin(c *gin.Context) {
 
 }
 
-func UserSignIn(c *gin.Context) {
+func SignInUser(c *gin.Context) {
+	request, err := getRequest(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	isSuccess := authBus.SignInUser(request)
+	if !isSuccess {
+		c.JSON(http.StatusUnauthorized, nil)
+		return
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{"companyId": request.CompanyId})
+
+	tokenString, err := token.SignedString(cons.JWT_SECRET_USER)
+	if err != nil {
+		fmt.Println("error while signing the token, err:", err.Error())
+		panic("Something went wrong. Please try again.")
+	}
+
+	cookie, err := utils.NewCookieBuilder().SetName(cons.USER_AUTH_COOKIE_NAME).SetValue(tokenString).SetHttpOnly(true).SetSecure(false).Build()
+	if err != nil {
+		log.Println("error while creating cookie, err:", err.Error())
+		panic("Something went wrong. Please try again.")
+	}
+
+	http.SetCookie(c.Writer, cookie)
 }
 
 func SignOut(c *gin.Context) {

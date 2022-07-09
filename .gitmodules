@@ -1,0 +1,3 @@
+[submodule "pub-ui/ui-common-lib"]
+	path = pub-ui/ui-common-lib
+	url = git@github.com:kumarmo2/ui-common-lib.git

@@ -1,2 +1,3 @@
 local-infra/**postgres-data
 local-infra/envoy_logs
+pub-ui/.next

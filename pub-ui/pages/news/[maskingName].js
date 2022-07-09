@@ -1,18 +1,40 @@
-import { useRouter } from 'next/router'
-import { getRandomProps } from '../../services'
+import { useRouter } from 'next/router';
+import { getRandomProps } from '../../services';
+import { useEffect } from 'react';
 
-const NewsDetails = () => {
-    const router = useRouter()
-    console.log(router.query)
+const NewsDetails = ({ newsDetails }) => {
+    const router = useRouter();
+    console.log(router.query);
+    console.log('newsDetails:', newsDetails);
+    useEffect(() => {
+        console.log('NewsDetails: componentDidMount');
+    }, []);
 
-    return <h1>News Details page</h1>
-}
+    // NOTE: componentDidMount to fetch the inital data is never required for pages
+    // that uses getServerSideProps.
+    // https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props
+    return <h1>News Details page</h1>;
+};
 
 export async function getServerSideProps() {
-    console.log('this code will run only on server side')
-    const props = await getRandomProps()
-    console.log('props: ', props)
-    return { props }
+    try {
+        console.log('NewsDetails: this code will run only on server side');
+        const data = await getRandomProps();
+        console.log('props: ', data);
+        return {
+            props: {
+                newsDetails: data,
+            },
+        };
+    } catch (err) {
+        console.log('err:', err);
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        };
+    }
 }
 
-export default NewsDetails
+export default NewsDetails;

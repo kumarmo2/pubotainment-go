@@ -1,5 +1,14 @@
-const Home = () => {
-    return <h1>Home</h1>
-}
+import Input from '../ui-common-lib/components/Input';
 
-export default Home
+const Home = () => {
+    return (
+        <>
+            <h1>Home</h1>
+            <div>
+                <Input />
+            </div>
+        </>
+    );
+};
+
+export default Home;

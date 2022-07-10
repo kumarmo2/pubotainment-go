@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"pubwebservice/constants"
@@ -10,6 +11,7 @@ import (
 )
 
 func UserAuthMiddleWare(c *gin.Context) {
+	log.Printf("cookies: %+v\n", c.Request.Cookies())
 	cookie, err := c.Cookie(constants.USER_AUTH_COOKIE_NAME)
 
 	if err != nil {
@@ -21,6 +23,7 @@ func UserAuthMiddleWare(c *gin.Context) {
 	token, err := jwt.Parse(cookie, func(t *jwt.Token) (interface{}, error) {
 
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
+			return nil, errors.New("token signing algorithm didn't match")
 		}
 		return constants.JWT_SECRET_USER, nil
 
@@ -45,5 +48,6 @@ func UserAuthMiddleWare(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	c.Keys = make(map[string]any)
 	c.Keys["companyId"] = value
 }

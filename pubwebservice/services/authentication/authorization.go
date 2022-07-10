@@ -76,7 +76,7 @@ func SignInUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, nil)
 		return
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{"companyId": request.CompanyId})
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"companyId": request.CompanyId})
 
 	tokenString, err := token.SignedString(cons.JWT_SECRET_USER)
 	if err != nil {
@@ -91,6 +91,7 @@ func SignInUser(c *gin.Context) {
 	}
 
 	http.SetCookie(c.Writer, cookie)
+	c.JSONP(http.StatusOK, nil)
 }
 
 func SignOut(c *gin.Context) {

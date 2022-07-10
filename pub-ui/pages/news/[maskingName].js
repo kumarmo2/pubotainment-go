@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { getRandomProps } from '../../services';
+import { getRandomProps } from '../../src/services';
 import { useEffect } from 'react';
 
 const NewsDetails = ({ newsDetails }) => {

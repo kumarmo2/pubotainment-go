@@ -8,6 +8,7 @@ import (
 	authService "pubwebservice/services/authentication"
 	"pubwebservice/services/events"
 	"pubwebservice/services/middlewares"
+	"pubwebservice/services/playlists"
 )
 
 func main() {
@@ -26,10 +27,13 @@ func helloMiddleWare(c *gin.Context) {
 
 func registerAdminRoutes(apiGroup *gin.RouterGroup) {
 
-	adminGroup := apiGroup.Group("/admin")
+	apiGroup.POST("/admin/signin/", authService.SignInAdmin)
+	apiGroup.POST("/admin/register/:companyName/", authService.RegisterAdmin)
+
+	adminGroup := apiGroup.Group("/admin", middlewares.AdminAuthMiddleWare)
 	{
-		adminGroup.POST("/signin/", authService.SignInAdmin)
-		adminGroup.POST("/register/:companyName/", authService.RegisterAdmin)
+		adminGroup.GET("/ping", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
+		adminGroup.POST("/playlists/", playlists.AddSong)
 	}
 }
 

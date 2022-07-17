@@ -2,18 +2,10 @@ package events
 
 import (
 	"log"
+	queueUtils "pubwebservice/business/queue_utils"
 	queuemanager "pubwebservice/commonLibs/queue_manager"
-	"sync"
 	"time"
 )
-
-var once sync.Once
-var queueManager queuemanager.IQueueManager
-
-func initQueueManager() {
-	queueManager = queuemanager.NewQueueManager()
-	go queueManager.Start()
-}
 
 func payloadHandler(payload interface{}) interface{} {
 	log.Printf("payload received: %v", payload)
@@ -22,7 +14,9 @@ func payloadHandler(payload interface{}) interface{} {
 
 // TODO: change the return type of this function.
 func GetEvents() interface{} {
-	once.Do(initQueueManager)
+
+	factory := queueUtils.GetQueueManagerFactory()
+	queueManager := factory.GetQueueManager()
 	timeOutChan := make(chan bool)
 	payloadChan := make(chan interface{})
 
@@ -35,7 +29,7 @@ func GetEvents() interface{} {
 	defer queueManager.RemoveSubscriber(subscriber)
 
 	go func() {
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Second * 5)
 		timeOutChan <- true
 	}()
 

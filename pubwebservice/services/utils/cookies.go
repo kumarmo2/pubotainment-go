@@ -93,9 +93,6 @@ func (builder *CookieBuilder) SetMaxAge(maxAge int) *CookieBuilder {
 }
 
 func (builder *CookieBuilder) SetHttpOnly(httpOnly bool) *CookieBuilder {
-	// if builder == nil {
-	// panic("build was null")
-	// }
 	builder.HttpOnly = &httpOnly
 	return builder
 }

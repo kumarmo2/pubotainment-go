@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	authService "pubwebservice/services/authentication"
+	"pubwebservice/services/events"
 	"pubwebservice/services/middlewares"
 )
 
@@ -38,9 +39,12 @@ func registerUserRoutes(apiGroup *gin.RouterGroup) {
 
 	userGroup := apiGroup.Group("/user", middlewares.UserAuthMiddleWare)
 	{
+
 		userGroup.GET("/ping", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
+
+		userGroup.GET("/events", events.Events)
 	}
 }
 

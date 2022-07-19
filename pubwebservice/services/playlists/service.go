@@ -16,5 +16,5 @@ func AddSong(c *gin.Context) {
 		return
 	}
 	// companyId := c.Keys["companyId"].(int64)
-	playlists.AddToPlaylist(&request, 1)
+	playlists.AddToPlaylist(&request, 1) // TODO: remove this hardcoding.
 }

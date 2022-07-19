@@ -13,7 +13,7 @@ func payloadHandler(payload interface{}) interface{} {
 }
 
 // TODO: change the return type of this function.
-func GetEvents() interface{} {
+func GetEvents() []interface{} {
 
 	factory := queueUtils.GetQueueManagerFactory()
 	queueManager := factory.GetQueueManager()
@@ -36,9 +36,9 @@ func GetEvents() interface{} {
 	select {
 	case _ = <-timeOutChan:
 		log.Println("timeout while waiting for message")
-		return map[string]string{"event": "timeout"}
+		return []interface{}{map[string]string{"event": "timeout"}}
 	case result := <-payloadChan:
-		return result
+		return []interface{}{map[string]interface{}{"event": result}}
 	}
 
 	// Either Timeout happens or subscriber receives a new payload.

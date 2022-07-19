@@ -9,5 +9,5 @@ import (
 
 func Events(c *gin.Context) {
 	events := events.GetEvents()
-	c.JSON(http.StatusOK, gin.H{"events": events})
+	c.JSON(http.StatusOK, gin.H{"result": events})
 }

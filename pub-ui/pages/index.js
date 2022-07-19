@@ -1,14 +1,9 @@
 import { userPing } from '../src/services';
 import { getRequestHeadersForBackendRequest } from '../src/utils/server';
-import Link from 'next/link';
+import HomeComponent from '../src/components/pages/Home';
 
 const Home = () => {
-    return (
-        <>
-            <h1>Home</h1>
-            <Link href="/login/">Signin</Link>
-        </>
-    );
+    return <HomeComponent />;
 };
 
 export async function getServerSideProps(context) {
@@ -28,5 +23,7 @@ export async function getServerSideProps(context) {
         throw err;
     }
 }
+
+Home.displayName = 'Home';
 
 export default Home;

@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
         };
     } catch (err) {
         console.log('Login: catch block');
-        return { prop: {} };
+        return { props: {} };
     }
 }
 export default LoginPage;

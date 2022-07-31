@@ -1,4 +1,3 @@
-import { events } from '../../../services/';
 import { useEffect, useReducer } from 'react';
 import reducer from './reducer';
 import { ADD_EVENT } from './actions';
@@ -13,11 +12,11 @@ const Home = () => {
 
     useEffect(() => {
         const fn = async () => {
-            console.log('getting events...');
-            const result = await events();
-            result.result &&
-                dispatch({ type: ADD_EVENT, value: result.result[0] });
-            console.log('result: ', result);
+            const ws = new WebSocket('ws://localhost/events/');
+
+            setInterval(() => {
+                ws.send('sdf klsdflsdfksdf');
+            }, 5000);
         };
 
         fn();
@@ -27,9 +26,6 @@ const Home = () => {
         <>
             <h1>Home</h1>
             <div>Events</div>
-            {state.events.map((e) => {
-                return <div> {e.event}</div>;
-            })}
             <Link href="/login/">Signin</Link>
         </>
     );

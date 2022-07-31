@@ -52,8 +52,4 @@ export const userSignIn = ({ companyId, pass, ...rest }) => {
     return api.post('/api/user/signin', { body, rest });
 };
 
-export const events = (rest) => {
-    return api.get('/api/user/events/', rest);
-};
-
 export default api;

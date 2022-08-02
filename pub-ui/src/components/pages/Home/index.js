@@ -13,10 +13,13 @@ const Home = () => {
     useEffect(() => {
         const fn = async () => {
             const ws = new WebSocket('ws://localhost/events/');
+            ws.addEventListener('message', function (event) {
+                console.log('Message from server ', event.data);
+            });
 
-            setInterval(() => {
-                ws.send('sdf klsdflsdfksdf');
-            }, 5000);
+            // setInterval(() => {
+            // ws.send('sdf klsdflsdfksdf');
+            // }, 5000);
         };
 
         fn();

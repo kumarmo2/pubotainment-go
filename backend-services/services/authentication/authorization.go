@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 )
 
 func getRequest(c *gin.Context) (*authDto.SignInRequest, error) {
@@ -44,8 +45,10 @@ func SignInAdmin(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, nil)
 		return
 	}
+	id, _ := uuid.NewUUID()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"companyId": request.CompanyId,
+		"deviceId":  id,
 	})
 	tokenString, err := token.SignedString(cons.JWT_SECRET_ADMIN)
 	if err != nil {
@@ -76,7 +79,11 @@ func SignInUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, nil)
 		return
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"companyId": request.CompanyId})
+	id, _ := uuid.NewUUID()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"companyId": request.CompanyId,
+		"deviceId":  id,
+	})
 
 	tokenString, err := token.SignedString(cons.JWT_SECRET_USER)
 	if err != nil {

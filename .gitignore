@@ -1,3 +1,4 @@
 local-infra/**postgres-data
+local-infra/**cassandra-data
 local-infra/envoy_logs
 pub-ui/.next

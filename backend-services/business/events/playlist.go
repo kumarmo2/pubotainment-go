@@ -16,7 +16,7 @@ func payloadHandler(payload interface{}) interface{} {
 func GetEvents() []interface{} {
 
 	factory := queueUtils.GetQueueManagerFactory()
-	queueManager := factory.GetQueueManager()
+	queueManager := factory.GetQueueManager("sdf")
 	timeOutChan := make(chan bool)
 	payloadChan := make(chan interface{})
 

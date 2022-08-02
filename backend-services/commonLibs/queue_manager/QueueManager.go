@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: make the queueManager thread-safe.
+
 type IQueueManager interface {
 	AddSubscriber(subscriber ISubscriber) error
 	RemoveSubscriber(subscriber ISubscriber) error

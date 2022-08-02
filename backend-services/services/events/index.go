@@ -3,11 +3,12 @@ package events
 import (
 	"fmt"
 	"log"
-	"time"
+	"net/http"
 
 	"encoding/json"
 	qu "pubwebservice/business/queue_utils"
 	qm "pubwebservice/commonLibs/queue_manager"
+	eventsDto "pubwebservice/dtos/events"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -28,6 +29,30 @@ func generateHandler(conn *websocket.Conn, c *gin.Context) func(interface{}) {
 	return func(payload interface{}) {
 		payloadHandler(conn, c, payload)
 	}
+}
+
+func ForwardEventToDevices(c *gin.Context) {
+	var request eventsDto.ForwardEventRequest
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	if request.Payload == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload cannot be null"})
+		c.Abort()
+		return
+	}
+
+	if request.CompanyId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid companyId"})
+		c.Abort()
+		return
+	}
+	qm := qu.GetQueueManagerFactory().GetQueueManager(fmt.Sprintf("%v", request.CompanyId))
+	qm.BroadCast(gin.H{"event": request.Payload})
 }
 
 func WsHandler(c *gin.Context) {
@@ -58,26 +83,5 @@ func WsHandler(c *gin.Context) {
 	qManager.AddSubscriber(sub)
 	defer qManager.RemoveSubscriber(sub)
 
-	go func() {
-		for {
-			qManager.BroadCast("msg...")
-			time.Sleep(time.Second * 3)
-		}
-
-	}()
-
 	conn.ReadMessage() // NOTE: this will block, until client sends any message. no client should be sending
-	// message to the server.
-
-	// for {
-	// if err != nil {
-	// break
-	// }
-
-	// msgString := string(msg)
-
-	// fmt.Printf("message received: %v", msgString)
-	// fmt.Printf("messageType: %v", messageType)
-	// }
-
 }

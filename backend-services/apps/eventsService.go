@@ -33,6 +33,11 @@ func startEventsService() {
 	// TODO: even admins can listen to events. So either the userAuth or adminAuth should be passed.
 	router.GET("/events/", middlewares.UserAuthMiddleWare, events.WsHandler)
 
+	// TODO: add some authorization logic. Ideally this endpoint should only be
+	// available to internal services and should not be allowed to call from the
+	// outside world.
+	router.POST("/events/", events.ForwardEventToDevices)
+
 	http.ListenAndServe(":8001", router)
 
 }

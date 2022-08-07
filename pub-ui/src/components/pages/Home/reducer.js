@@ -5,7 +5,7 @@ const reducer = (state, action) => {
         case ADD_EVENT: {
             return {
                 ...state,
-                events: [...state.events, action.value],
+                events: [action.value, ...state.events],
             };
         }
         default:

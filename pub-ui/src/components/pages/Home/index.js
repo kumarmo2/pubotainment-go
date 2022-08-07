@@ -3,32 +3,37 @@ import reducer from './reducer';
 import { ADD_EVENT } from './actions';
 import Link from 'next/link';
 
-const initialState = {
-    events: [],
-};
 
 const Home = () => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, { events: []});
 
     useEffect(() => {
-        const fn = async () => {
-            const ws = new WebSocket('ws://localhost/events/');
-            ws.addEventListener('message', function (event) {
+            const messageHandler = event => {
                 console.log('Message from server ', event.data);
-            });
+                dispatch({ type: ADD_EVENT, value: JSON.parse(event.data)})
+            }
+            const ws = new WebSocket('ws://localhost/events/');
+            ws.addEventListener('message', messageHandler);
 
-            // setInterval(() => {
-            // ws.send('sdf klsdflsdfksdf');
-            // }, 5000);
-        };
+        return () => {
+            console.log("removing listener");
+            ws.close()
+            ws.removeEventListener('message', messageHandler, true);
+        }
 
-        fn();
     }, []);
+    console.log("events.length: ", state.events.length);
 
     return (
         <>
             <h1>Home</h1>
-            <div>Events</div>
+            <div>Events-1</div>
+            {
+                state.events.map((event, index) => {
+                        console.log("rendering: ", index, event) 
+                    return <div key={index}> {event.event.name} </div>;
+            })
+            }
             <Link href="/login/">Signin</Link>
         </>
     );

@@ -5,13 +5,13 @@ import (
 	"pubwebservice/models/serviceDiscovery"
 )
 
-func InsertConnectionMap(connectionMap *servicediscovery.DeviceConnectionMap) error {
+func InsertConnectionMap(connectionMap *servicediscovery.ConnectionServerMap) error {
 	conn, err := dataaccess.GetCassandraConnectionFactory().GetConnection()
 	if err != nil {
 		panic(err.Error())
 	}
-	err = conn.Query(`insert into servicediscovery.deviceconnectionmap(deviceid, serverid, lastpinged, companyid ) 
-                values (?, ?, ?, ?)`, connectionMap.DeviceId, connectionMap.ServerId,
+	err = conn.Query(`insert into servicediscovery.connectionservermap(connectionid, serverid, lastpinged, companyid ) 
+                values (?, ?, ?, ?)`, connectionMap.ConnectionId, connectionMap.ServerId,
 		connectionMap.LastPinged, connectionMap.CompanyId).Exec()
 
 	if err != nil {

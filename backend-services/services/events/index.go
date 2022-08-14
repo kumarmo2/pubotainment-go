@@ -4,13 +4,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"encoding/json"
 	qu "pubwebservice/business/queue_utils"
 	qm "pubwebservice/commonLibs/queue_manager"
+	sdDataAccess "pubwebservice/dataAccess/serviceDiscovery"
 	eventsDto "pubwebservice/dtos/events"
+	sdModel "pubwebservice/models/serviceDiscovery"
+	"pubwebservice/services/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -73,15 +78,41 @@ func WsHandler(c *gin.Context) {
 		fmt.Printf("Failed to set websocket upgrade: %+v", err)
 		return
 	}
-	deviceId := c.Keys["deviceId"]
-	companyId := c.Keys["companyId"]
-	log.Printf("deviceId: %v\n, companyId: %v\n", deviceId, companyId)
+	// deviceId := c.Keys["deviceId"]
+	companyId := c.Keys["companyId"].(int64)
 	qManager := qu.GetQueueManagerFactory().GetQueueManager(fmt.Sprint(companyId))
+	connectionId := uuid.New().String()
 
 	handler := generateHandler(conn, c)
 	sub := qm.NewSubscriber(handler)
 	qManager.AddSubscriber(sub)
 	defer qManager.RemoveSubscriber(sub)
 
+	quitChan := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-quitChan:
+				{
+					return
+				}
+			default:
+				log.Println("ping service discovery")
+				// TODO: update the lastpinged of the connection in the cassandra.
+				time.Sleep(time.Second * 3)
+				connectionMap := sdModel.ConnectionServerMap{
+					ServerId:     utils.GetServerId(),
+					ConnectionId: connectionId,
+					LastPinged:   time.Now(),
+					CompanyId:    companyId,
+				}
+				sdDataAccess.InsertConnectionMap(&connectionMap)
+			}
+		}
+
+	}()
+
 	conn.ReadMessage() // NOTE: this will block, until client sends any message. no client should be sending
+	quitChan <- true
 }

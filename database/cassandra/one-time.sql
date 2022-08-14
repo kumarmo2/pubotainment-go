@@ -1,6 +1,9 @@
 create keyspace servicediscovery
 with replication = { 'class': 'SimpleStrategy', 'replication_factor': 2};
 
+create keyspace songs
+with replication = { 'class': 'SimpleStrategy', 'replication_factor': 1};
+
 create table servicediscovery.serverinstances (
     id text,
     ips list<text>,
@@ -9,10 +12,28 @@ create table servicediscovery.serverinstances (
 );
 
 
-create table servicediscovery.deviceconnectionmap (
-    deviceid text,
-    serverid text,
-    lastpinged timestamp,
+create table servicediscovery.connectionservermap (
+connectionid text,
+serverid text,
+lastpinged timestamp,
+companyid bigint,
+primary key((companyid), connectionid)
+); 
+
+
+create table songs.inventory_main(
+    companyid bigint ,
+    id bigint,
+    name text,
+    createon timestamp,
+    modifiedon timestamp,
+    primary key((companyid), id)
+) with clustering order by (id desc);
+
+create table songs.inventory_sorted_by_name(
     companyid bigint,
-    primary key((companyid), deviceid, lastpinged)
-) with clustering order by (deviceid asc, lastpinged desc); 
+    name text,
+    id bigint,
+    primary key((companyid), name)
+) with clustering order by(name asc);
+

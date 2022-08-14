@@ -8,14 +8,14 @@ import (
 
 	"pubwebservice/commonLibs/misc"
 	"pubwebservice/dataAccess/serviceDiscovery"
+	"pubwebservice/services/utils"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"pubwebservice/services/events"
 	"pubwebservice/services/middlewares"
 )
 
-var ServerId uuid.UUID = uuid.New()
+// var ServerId uuid.UUID = uuid.New()
 
 func startEventsService() {
 	fmt.Println("======== events service ===========")
@@ -24,10 +24,7 @@ func startEventsService() {
 		log.Println("err:", err.Error())
 	}
 	log.Printf("Local address: %v\n", addr)
-	servicediscovery.InsertServcerInstance(ServerId.String(), []string{addr})
-	// ips := servicediscovery.GetIps("id1")
-
-	// fmt.Printf("ips: %v\n", ips)
+	servicediscovery.InsertServcerInstance(utils.GetServerId(), []string{addr})
 
 	router := gin.Default()
 	// TODO: even admins can listen to events. So either the userAuth or adminAuth should be passed.

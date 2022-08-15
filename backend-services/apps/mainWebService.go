@@ -9,6 +9,7 @@ import (
 	"pubwebservice/services/events"
 	"pubwebservice/services/middlewares"
 	"pubwebservice/services/playlists"
+	"pubwebservice/services/songs"
 )
 
 func startWebService() {
@@ -34,6 +35,11 @@ func registerAdminRoutes(apiGroup *gin.RouterGroup) {
 	{
 		adminGroup.GET("/ping", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 		adminGroup.POST("/playlists/", playlists.AddSong)
+
+		songsGroup := adminGroup.Group("/songs")
+		{
+			songsGroup.POST("/inventory", songs.AddSongToInventory)
+		}
 	}
 }
 
